@@ -18,19 +18,24 @@ extern unsigned int static_NEXTOR_SYS_len;
 extern unsigned char static_OCM_BIOS_DAT[];
 extern unsigned int static_OCM_BIOS_DAT_len;
 
-const size_t fs_size = 156109;
+const size_t fs_size = 151552;
+const size_t cluster_size = 2048;
+
+size_t fit_to_cluster(size_t size) {
+    return (size + cluster_size - 1) & ~(cluster_size - 1);
+}
 
 // Given a ROM file, it creates a .VHD file with the ROM and the necessary
 // files to boot into it.
 int main(int argc, char *argv[]) {
 	setbuf(stdout, NULL);
 
-	size_t system_size = (static_OCM_BIOS_DAT_len
-			      + static_MSXDOS2_SYS_len
-			      + static_NEXTOR_SYS_len
-			      + static_COMMAND2_COM_len
-			      + static_execrom_com_len
-			      + static_AUTOEXEC_BAT_len);
+	size_t system_size = (fit_to_cluster(static_OCM_BIOS_DAT_len)
+			      + fit_to_cluster(static_MSXDOS2_SYS_len)
+			      + fit_to_cluster(static_NEXTOR_SYS_len)
+			      + fit_to_cluster(static_COMMAND2_COM_len)
+			      + fit_to_cluster(static_execrom_com_len)
+			      + fit_to_cluster(static_AUTOEXEC_BAT_len));
 
 	if (argc != 3) {
 		printf("%s ( %s )\n", PACKAGE_STRING, PACKAGE_URL);
@@ -40,7 +45,7 @@ int main(int argc, char *argv[]) {
 
 	struct stat st;
 	stat(argv[1], &st);
-	size_t rom_size = st.st_size;
+	size_t rom_size = fit_to_cluster(st.st_size);
 
 	guestfs_h *g = guestfs_create();
 	if (g == NULL) {
