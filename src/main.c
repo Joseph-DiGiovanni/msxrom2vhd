@@ -73,13 +73,14 @@ int main(int argc, char *argv[]) {
 	printf("OK\n");
 
 	printf("Copying files... ");
+
 	/* BIOS */
-	printf("BIOS");
+	printf("BIOS ");
 	if (guestfs_write(g, "/OCM-BIOS.DAT", static_OCM_BIOS_DAT, static_OCM_BIOS_DAT_len) == -1)
 		exit(EXIT_FAILURE);
 
 	/* OS */
-	printf(" OS");
+	printf("OS ");
 	if (guestfs_write(g, "/MSXDOS2.SYS", static_MSXDOS2_SYS, static_MSXDOS2_SYS_len) == -1)
 		exit(EXIT_FAILURE);
 
@@ -90,7 +91,7 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 
 	/* ROM LOADER */
-	printf(" LOADER");
+	printf("LOADER ");
 	if (guestfs_write(g, "/EXECROM.COM", static_execrom_com, static_execrom_com_len) == -1)
 		exit(EXIT_FAILURE);
 
@@ -98,7 +99,7 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 
 	/* ROM */
-	printf(" ROM");
+	printf("ROM ");
 	if (guestfs_upload(g, argv[1], "/USER.ROM") == -1)
 		exit(EXIT_FAILURE);
 	printf("\n");
@@ -106,11 +107,11 @@ int main(int argc, char *argv[]) {
 	printf("Unmounting... ");
 	if (guestfs_umount(g, "/") == -1)
 		exit(EXIT_FAILURE);
-	printf("OK\n");
 
 	if (guestfs_shutdown(g) == -1)
 		exit(EXIT_FAILURE);
 
 	guestfs_close(g);
+	printf("OK");
 	exit(EXIT_SUCCESS);
 }
